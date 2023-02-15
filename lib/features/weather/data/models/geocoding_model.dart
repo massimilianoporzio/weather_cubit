@@ -8,13 +8,11 @@ class GeoCodingModel extends DirectGeoCoding {
       required super.lon});
 
   factory GeoCodingModel.fromJson(Map<String, dynamic> json) {
-    final Map<String, dynamic> data =
-        json[0]; //primo e unico elemento della lista che torna da API
     return GeoCodingModel(
-      name: data["name"],
-      lat: data["lat"]?.toDouble(),
-      lon: data["lon"]?.toDouble(),
-      country: data["country"],
+      name: json["name"] ?? '',
+      lat: json["lat"]?.toDouble(),
+      lon: json["lon"]?.toDouble(),
+      country: json["country"] ?? '',
     );
   }
 }

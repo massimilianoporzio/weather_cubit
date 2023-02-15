@@ -43,7 +43,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       if (response.statusCode != 200) {
         throw ServerException(msg: httpErrorHandler(response));
       }
-      final Map<String, dynamic> responseBody = json.decode(response.body);
+      final Map<String, dynamic> responseBody = json.decode(response.body)[0];
 
       if (responseBody.isEmpty) {
         throw WeatherException('Cannot get the location of $city');

@@ -12,7 +12,7 @@ class WeatherModel extends Weather {
       required super.lastUpdated});
 
   factory WeatherModel.fromJson(Map<String, dynamic> json) {
-    final weather = json['weather'];
+    final weather = json['weather'][0];
     final main = json['main'];
     return WeatherModel(
       description: weather['description'] ?? '',
