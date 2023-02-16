@@ -8,12 +8,16 @@ import 'package:openweather_cubit/features/geolocation/domain/repositories/geolo
 import 'package:openweather_cubit/features/weather/data/datasources/remote_datasource.dart';
 import 'package:openweather_cubit/features/weather/data/repositories/weather_repository_impl.dart';
 import 'package:openweather_cubit/features/weather/domain/repositories/weather_repository.dart';
+import 'package:openweather_cubit/features/weather/presentation/cubit/weather_cubit.dart';
 
 import '../../features/weather/data/datasources/remote_datasource_impl.dart';
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
+  //blocs / cubits
+  sl.registerFactory<WeatherCubit>(() => WeatherCubit(weatherRepository: sl()));
+
   //repositories
   sl.registerLazySingleton<WeatherRepository>(() =>
       WeatherRepositoryImpl(remoteDataSource: sl(), localGeoLocationDS: sl()));
