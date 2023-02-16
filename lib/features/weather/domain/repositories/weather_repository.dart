@@ -5,4 +5,5 @@ import '../../../../core/errors/failures.dart';
 
 abstract class WeatherRepository {
   Future<Either<Failure, Weather>> fetchWeather(String city);
+  Future<Either<Failure, Weather>> fetchWeatherFroMCurrentLocation();
 }

@@ -4,5 +4,7 @@ import 'package:openweather_cubit/features/weather/domain/entities/direct_geocod
 
 abstract class RemoteDataSource {
   Future<GeoCodingModel> getDirectGeocoding(String city);
+  Future<String> getCityFromCoordinates(double lat, double lon);
   Future<WeatherModel> getWeather(DirectGeoCoding directGeoCoding);
+  Future<WeatherModel> getWeatherFromCoordinates(double lat, double lon);
 }

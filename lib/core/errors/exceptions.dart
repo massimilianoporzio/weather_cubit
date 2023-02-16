@@ -17,3 +17,10 @@ class WeatherException implements Exception {
 }
 
 class GenericException implements Exception {}
+
+class GeolocatorException implements Exception {
+  String message;
+  GeolocatorException([
+    this.message = 'Problems occured using Locator Services',
+  ]);
+}

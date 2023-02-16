@@ -33,3 +33,7 @@ class WeatherFailure extends Failure {
 class GenericFailure extends Failure {
   const GenericFailure({super.errMsg = "Generic Error"});
 }
+
+class LocationServiceFailure extends Failure {
+  const LocationServiceFailure({required super.errMsg});
+}

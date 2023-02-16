@@ -72,7 +72,66 @@ class RemoteDataSourceImpl implements RemoteDataSource {
           'lon': '${directGeoCoding.lon}',
           'limit': AppConstants.kLimit,
           'appid': Env.WEATHER_API,
-          'unit': AppConstants.kUnit
+          'units': AppConstants.kUnit
+        });
+
+    try {
+      final http.Response response = await httpClient.get(weatherUri);
+      if (response.statusCode != 200) {
+        throw ServerException(msg: httpErrorHandler(response));
+      }
+      final weatherJson = json.decode(response.body);
+      final weather = WeatherModel.fromJson(weatherJson);
+      return weather;
+    } on ServerException {
+      rethrow;
+    } on WeatherException {
+      rethrow;
+    } on Exception catch (e) {
+      throw GenericException();
+    }
+  }
+
+  @override
+  Future<String> getCityFromCoordinates(double lat, double lon) async {
+    final geocodingUri = Uri(
+        scheme: 'https',
+        host: AppConstants.kApiHost,
+        path: '/geo/1.0/reverse',
+        queryParameters: {
+          'lat': '$lat',
+          'lon': '$lon',
+          'limit': AppConstants.kLimit,
+          'appid': Env.WEATHER_API
+        });
+
+    try {
+      final http.Response response = await httpClient.get(geocodingUri);
+      if (response.statusCode != 200) {
+        throw ServerException(msg: httpErrorHandler(response));
+      }
+      final Map<String, dynamic> responseBody = json.decode(response.body)[0];
+      final String city = responseBody['name'];
+      return city;
+    } on ServerException {
+      rethrow;
+    } on Exception {
+      throw GenericException();
+    }
+  }
+
+  @override
+  Future<WeatherModel> getWeatherFromCoordinates(double lat, double lon) async {
+    final weatherUri = Uri(
+        scheme: 'https',
+        host: AppConstants.kApiHost,
+        path: '/data/2.5/weather',
+        queryParameters: {
+          'lat': '$lat',
+          'lon': '$lon',
+          'limit': AppConstants.kLimit,
+          'appid': Env.WEATHER_API,
+          'units': AppConstants.kUnit
         });
 
     try {
