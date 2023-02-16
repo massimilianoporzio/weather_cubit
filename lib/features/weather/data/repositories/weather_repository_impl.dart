@@ -41,7 +41,8 @@ class WeatherRepositoryImpl implements WeatherRepository {
   @override
   Future<Either<Failure, Weather>> fetchWeatherFroMCurrentLocation() async {
     try {
-      await localGeoLocationDS.checkPermissions();
+      final permission = await localGeoLocationDS.checkPermissions();
+
       final serivecesEnabled =
           await localGeoLocationDS.isLocationServiceEnabled();
       if (!serivecesEnabled) {
