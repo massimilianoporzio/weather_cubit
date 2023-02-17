@@ -95,7 +95,7 @@ class _HomePageState extends State<HomePage> {
     return CachedNetworkImage(
       width: 96,
       height: 96,
-      imageUrl: 'https://${AppConstants.kIconHost}/img/wn/$icon@4x.png',
+      imageUrl: 'https://$kIconHost/img/wn/$icon@4x.png',
       placeholder: (context, url) => loadingWidget,
       errorWidget: (context, url, error) => const Icon(Icons.error),
     );

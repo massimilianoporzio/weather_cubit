@@ -30,11 +30,11 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     //fornisco la query
     final geocodingUri = Uri(
         scheme: 'https',
-        host: AppConstants.kApiHost,
+        host: kApiHost,
         path: '/geo/1.0/direct',
         queryParameters: {
           'q': city,
-          'limit': AppConstants.kLimit,
+          'limit': kLimit,
           'appid': Env.WEATHER_API
         });
 
@@ -70,14 +70,14 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   Future<WeatherModel> getWeather(DirectGeoCoding directGeoCoding) async {
     final weatherUri = Uri(
         scheme: 'https',
-        host: AppConstants.kApiHost,
+        host: kApiHost,
         path: '/data/2.5/weather',
         queryParameters: {
           'lat': '${directGeoCoding.lat}',
           'lon': '${directGeoCoding.lon}',
-          'limit': AppConstants.kLimit,
+          'limit': kLimit,
           'appid': Env.WEATHER_API,
-          'units': AppConstants.kUnit
+          'units': kUnit
         });
 
     try {
@@ -101,12 +101,12 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   Future<String> getCityFromCoordinates(double lat, double lon) async {
     final geocodingUri = Uri(
         scheme: 'https',
-        host: AppConstants.kApiHost,
+        host: kApiHost,
         path: '/geo/1.0/reverse',
         queryParameters: {
           'lat': '$lat',
           'lon': '$lon',
-          'limit': AppConstants.kLimit,
+          'limit': kLimit,
           'appid': Env.WEATHER_API
         });
 
@@ -129,14 +129,14 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   Future<WeatherModel> getWeatherFromCoordinates(double lat, double lon) async {
     final weatherUri = Uri(
         scheme: 'https',
-        host: AppConstants.kApiHost,
+        host: kApiHost,
         path: '/data/2.5/weather',
         queryParameters: {
           'lat': '$lat',
           'lon': '$lon',
-          'limit': AppConstants.kLimit,
+          'limit': kLimit,
           'appid': Env.WEATHER_API,
-          'units': AppConstants.kUnit
+          'units': kUnit
         });
 
     try {
@@ -151,7 +151,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       rethrow;
     } on WeatherException {
       rethrow;
-    } on Exception catch (e) {
+    } on Exception {
       throw GenericException();
     }
   }
