@@ -58,9 +58,13 @@ class WeatherRepositoryImpl implements WeatherRepository {
           name: directGeocoding.name, country: directGeocoding.country);
 
       return Right(weather);
+    } on ServerException catch (se) {
+      return Left(ServerFailure(errMsg: se.msg));
     } on GeolocatorException catch (ge) {
       return Left(LocationServiceFailure(errMsg: ge.message));
-    } on Exception {
+    } on GenericException catch (e) {
+      return Left(GenericFailure(errMsg: e.message));
+    } on Exception catch (e) {
       return const Left(GenericFailure());
     }
   }

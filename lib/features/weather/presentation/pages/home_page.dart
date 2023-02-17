@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:openweather_cubit/core/presentation/widgets/error_dialog.dart';
 import 'package:openweather_cubit/features/weather/presentation/cubit/weather_cubit.dart';
 import 'package:openweather_cubit/features/weather/presentation/pages/search_page.dart';
 
@@ -46,7 +47,60 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
-      body: const Center(child: Text('Home')),
+      body: _showWeather(),
+    );
+  }
+
+  Widget _showWeather() {
+    return BlocConsumer<WeatherCubit, WeatherState>(
+      listener: (context, state) {
+        if (state.status == WeatherStatus.error) {
+          errorDialog(context, errorMsg: state.message);
+        }
+      },
+      builder: (context, state) {
+        if (state.status == WeatherStatus.initial) {
+          return const Center(
+            child: Text(
+              'Select a city',
+              style: TextStyle(fontSize: 20),
+            ),
+          );
+        } else if (state.status == WeatherStatus.loading) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                CircularProgressIndicator(),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  'fetching Weather data...',
+                  style: TextStyle(fontSize: 18),
+                )
+              ],
+            ),
+          );
+        } else if (state.status == WeatherStatus.loaded) {
+          return Center(
+            child: Text(
+              state.weather.name,
+              style: const TextStyle(fontSize: 18),
+            ),
+          );
+        } else if (state.status == WeatherStatus.error &&
+            state.weather.name == '') {
+          return const Center(
+            child: Text(
+              'Select a city',
+              style: TextStyle(fontSize: 20),
+            ),
+          );
+        } else {
+          return SizedBox();
+        }
+      },
     );
   }
 }

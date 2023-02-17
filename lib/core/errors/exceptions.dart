@@ -16,7 +16,12 @@ class WeatherException implements Exception {
   String toString() => message;
 }
 
-class GenericException implements Exception {}
+class GenericException implements Exception {
+  final String message;
+  GenericException({
+    this.message = 'Generic Error',
+  });
+}
 
 class GeolocatorException implements Exception {
   String message;

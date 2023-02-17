@@ -120,8 +120,8 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       return city;
     } on ServerException {
       rethrow;
-    } on Exception {
-      throw GenericException();
+    } on Exception catch (e) {
+      throw GenericException(message: e.toString());
     }
   }
 
