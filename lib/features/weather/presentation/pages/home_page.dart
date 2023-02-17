@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:openweather_cubit/core/presentation/widgets/error_dialog.dart';
 import 'package:openweather_cubit/core/utils/constants.dart';
+
 import 'package:openweather_cubit/features/weather/presentation/cubit/weather_cubit.dart';
 import 'package:openweather_cubit/features/weather/presentation/pages/search_page.dart';
+import 'package:openweather_cubit/features/weather/presentation/pages/settings_page.dart';
 import 'package:openweather_cubit/features/weather/presentation/widgets/select_city_or_get_location.dart';
 import 'package:recase/recase.dart';
+
+import '../../../temp_settings/presentation/cubit/temp_settings_cubit.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -38,17 +42,28 @@ class _HomePageState extends State<HomePage> {
             onPressed: () async {
               //*devo aspettare il risultato! per questo è async
               _city = await Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const SearchPage(),
+                builder: (_) => const SearchPage(),
               ));
-              print('city: $_city');
+              // print('city: $_city');
               if (_city != null) {
-                context.read<WeatherCubit>().fetchWeather(_city!);
+                if (mounted) {
+                  context.read<WeatherCubit>().fetchWeather(_city!);
+                }
               }
             },
             icon: const Icon(
               Icons.search,
             ),
-          )
+          ),
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SettingsPage(),
+                    ));
+              },
+              icon: const Icon(Icons.settings))
         ],
       ),
       body: _showWeather(),
@@ -56,6 +71,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   String showTemperature(double temperature) {
+    final tempUnit = context.watch<TempSettingsCubit>().state.tempUnit;
+
+    if (tempUnit == TempUnit.fahrenheit) {
+      return '${((temperature * 9 / 5) + 32).toStringAsFixed(2)}℉';
+    }
     return '${temperature.toStringAsFixed(2)}℃';
   }
 
