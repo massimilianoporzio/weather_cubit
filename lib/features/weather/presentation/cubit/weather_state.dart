@@ -10,38 +10,37 @@ enum WeatherStatus {
 class WeatherState extends Equatable {
   final WeatherStatus status;
   final Weather weather;
-  final Failure failure;
+  final String message;
 
   const WeatherState({
     required this.status,
     required this.weather,
-    required this.failure,
+    this.message = '',
   });
 
   factory WeatherState.initial() {
     return WeatherState(
-        status: WeatherStatus.initial,
-        weather: Weather.initial(),
-        failure: const GenericFailure() //londra
-        );
+      status: WeatherStatus.initial,
+      weather: Weather.initial(),
+    );
   }
 
   @override
   String toString() =>
-      'WeatherState(status: $status, weather: $weather, failure: $failure)';
+      'WeatherState(status: $status, weather: $weather, message: $message)';
 
   @override
-  List<Object> get props => [status, weather, failure];
+  List<Object> get props => [status, weather, message];
 
   WeatherState copyWith({
     WeatherStatus? status,
     Weather? weather,
-    Failure? failure,
+    String? message,
   }) {
     return WeatherState(
       status: status ?? this.status,
       weather: weather ?? this.weather,
-      failure: failure ?? this.failure,
+      message: message ?? this.message,
     );
   }
 }

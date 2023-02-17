@@ -24,16 +24,19 @@ class WeatherCubit extends Cubit<WeatherState> {
   }) : super(WeatherState.initial());
 
   Future<void> fetchWeatherFromCurrentLocation() async {
-    emit(state.copyWith(status: WeatherStatus.loading));
+    emit(state.copyWith(
+      status: WeatherStatus.loading,
+    ));
     final result = await handlePermissions(const NoParameters());
     result.fold(
-      (failure) =>
-          emit(state.copyWith(failure: failure, status: WeatherStatus.error)),
+      (failure) => emit(state.copyWith(
+          message: failure.errMsg,
+          weather: Weather.initial(),
+          status: WeatherStatus.error)),
       (permissionOk) {
         if (!permissionOk) {
           emit(state.copyWith(
-              failure: const LocationServiceFailure(
-                  errMsg: 'Permissions denied for Location Services'),
+              message: 'Permissions denied for Location Services',
               status: WeatherStatus.error));
         }
         //non fa nulla se invece è ok nel senso che va avanti
@@ -43,26 +46,31 @@ class WeatherCubit extends Cubit<WeatherState> {
         await fetchWeatherCurrentPosition(const NoParameters());
     weatherResult.fold(
       (failure) {
-        emit(state.copyWith(failure: failure, status: WeatherStatus.error));
+        emit(state.copyWith(
+            weather: Weather.initial(),
+            message: failure.errMsg,
+            status: WeatherStatus.error));
         print('state: $state');
       },
       (weather) {
         emit(state.copyWith(
-          status: WeatherStatus.loaded,
-          weather: weather,
-        ));
+            status: WeatherStatus.loaded, weather: weather, message: ''));
         print('state: $state');
       },
     );
   }
 
   Future<void> fetchWeather(String city) async {
+    emit(state.copyWith(
+        status: WeatherStatus.loading, weather: Weather.initial()));
     final result = await fetchWeatherFromCity(CityParams(city: city));
     result.fold((failure) {
-      emit(state.copyWith(status: WeatherStatus.error, failure: failure));
+      emit(
+          state.copyWith(status: WeatherStatus.error, message: failure.errMsg));
       print('state: $state');
     }, (weather) {
-      emit(state.copyWith(weather: weather, status: WeatherStatus.loaded));
+      emit(state.copyWith(
+          weather: weather, status: WeatherStatus.loaded, message: ''));
       print('state: $state');
     });
   }
