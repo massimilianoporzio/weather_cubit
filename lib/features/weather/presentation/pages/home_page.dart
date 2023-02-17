@@ -1,9 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:openweather_cubit/core/presentation/widgets/error_dialog.dart';
+import 'package:openweather_cubit/core/utils/constants.dart';
 import 'package:openweather_cubit/features/weather/presentation/cubit/weather_cubit.dart';
 import 'package:openweather_cubit/features/weather/presentation/pages/search_page.dart';
 import 'package:openweather_cubit/features/weather/presentation/widgets/select_city_or_get_location.dart';
+import 'package:recase/recase.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -52,6 +55,32 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  String showTemperature(double temperature) {
+    return '${temperature.toStringAsFixed(2)}℃';
+  }
+
+  Widget formatDescription(String description) {
+    final formattedString = description.titleCase;
+    return Text(
+      formattedString,
+      textAlign: TextAlign.center,
+      style: const TextStyle(fontSize: 24),
+    );
+  }
+
+  Widget showIcon(String icon) {
+    final loadingWidget =
+        Image.asset('assets/images/loading.gif', fit: BoxFit.cover);
+
+    return CachedNetworkImage(
+      width: 96,
+      height: 96,
+      imageUrl: 'https://${AppConstants.kIconHost}/img/wn/$icon@4x.png',
+      placeholder: (context, url) => loadingWidget,
+      errorWidget: (context, url, error) => const Icon(Icons.error),
+    );
+  }
+
   Widget _showWeather() {
     return BlocConsumer<WeatherCubit, WeatherState>(
       listener: (context, state) {
@@ -79,17 +108,97 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         } else if (state.status == WeatherStatus.loaded) {
-          return Center(
-            child: Text(
-              state.weather.name,
-              style: const TextStyle(fontSize: 18),
-            ),
+          return ListView(
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height / 6,
+              ),
+              Text(
+                state.weather.name,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    TimeOfDay.fromDateTime(state.weather.lastUpdated)
+                        .format(context),
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Text(
+                    '(${state.weather.country})',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 60,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    showTemperature(state.weather.temp),
+                    style: const TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Column(
+                    children: [
+                      Text(
+                        showTemperature(state.weather.tempMax),
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        showTemperature(state.weather.tempMin),
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 40,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  const Spacer(),
+                  showIcon(state.weather.icon),
+                  Expanded(
+                    flex: 3,
+                    child: formatDescription(state.weather.description),
+                  ),
+                  const Spacer()
+                ],
+              ),
+            ],
           );
         } else if (state.status == WeatherStatus.error &&
             state.weather.name == '') {
           return const SelectCityOrGetLocationWidget();
         } else {
-          return SizedBox();
+          return const SizedBox();
         }
       },
     );
