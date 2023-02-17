@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:openweather_cubit/core/presentation/widgets/error_dialog.dart';
 import 'package:openweather_cubit/features/weather/presentation/cubit/weather_cubit.dart';
 import 'package:openweather_cubit/features/weather/presentation/pages/search_page.dart';
+import 'package:openweather_cubit/features/weather/presentation/widgets/select_city_or_get_location.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -60,12 +61,7 @@ class _HomePageState extends State<HomePage> {
       },
       builder: (context, state) {
         if (state.status == WeatherStatus.initial) {
-          return const Center(
-            child: Text(
-              'Select a city',
-              style: TextStyle(fontSize: 20),
-            ),
-          );
+          return const SelectCityOrGetLocationWidget();
         } else if (state.status == WeatherStatus.loading) {
           return Center(
             child: Column(
@@ -91,12 +87,7 @@ class _HomePageState extends State<HomePage> {
           );
         } else if (state.status == WeatherStatus.error &&
             state.weather.name == '') {
-          return const Center(
-            child: Text(
-              'Select a city',
-              style: TextStyle(fontSize: 20),
-            ),
-          );
+          return const SelectCityOrGetLocationWidget();
         } else {
           return SizedBox();
         }
