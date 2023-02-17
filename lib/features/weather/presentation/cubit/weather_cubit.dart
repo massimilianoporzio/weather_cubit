@@ -1,22 +1,47 @@
-import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:openweather_cubit/core/errors/failures.dart';
-import 'package:openweather_cubit/features/weather/domain/entities/weather.dart';
-import 'package:openweather_cubit/features/weather/domain/repositories/weather_repository.dart';
+
+import '../../../../core/errors/failures.dart';
+import '../../../../core/usecases/base_usecase.dart';
+
+import '../../../geolocation/domain/usecases/handle_permissions.dart';
+import '../../domain/entities/weather.dart';
+
+import '../../domain/usecases/fetch_weather_from_city.dart';
+import '../../domain/usecases/fetch_weather_from_current_location.dart';
 
 part 'weather_state.dart';
 
 class WeatherCubit extends Cubit<WeatherState> {
-  final WeatherRepository weatherRepository;
-  WeatherCubit({required this.weatherRepository})
-      : super(WeatherState.initial());
+  final FetchWeatherFromCurrentLocationUsecase fetchWeatherCurrentPosition;
+  final HandlePermissionsUseCase handlePermissions;
+  final FetchWeatherFromCityUsecase fetchWeatherFromCity;
+
+  WeatherCubit({
+    required this.fetchWeatherCurrentPosition,
+    required this.handlePermissions,
+    required this.fetchWeatherFromCity,
+  }) : super(WeatherState.initial());
 
   Future<void> fetchWeatherFromCurrentLocation() async {
     emit(state.copyWith(status: WeatherStatus.loading));
-    Either<Failure, Weather> weatherResponse =
-        await weatherRepository.fetchWeatherFroMCurrentLocation();
-    weatherResponse.fold(
+    final result = await handlePermissions(const NoParameters());
+    result.fold(
+      (failure) =>
+          emit(state.copyWith(failure: failure, status: WeatherStatus.error)),
+      (permissionOk) {
+        if (!permissionOk) {
+          emit(state.copyWith(
+              failure: const LocationServiceFailure(
+                  errMsg: 'Permissions denied for Location Services'),
+              status: WeatherStatus.error));
+        }
+        //non fa nulla se invece è ok nel senso che va avanti
+      },
+    );
+    final weatherResult =
+        await fetchWeatherCurrentPosition(const NoParameters());
+    weatherResult.fold(
       (failure) {
         emit(state.copyWith(failure: failure, status: WeatherStatus.error));
         print('state: $state');
@@ -31,10 +56,9 @@ class WeatherCubit extends Cubit<WeatherState> {
     );
   }
 
-  Future<void> fetcgWeather(String city) async {
-    Either<Failure, Weather> weatherResponse =
-        await weatherRepository.fetchWeather(city);
-    weatherResponse.fold((failure) {
+  Future<void> fetchWeather(String city) async {
+    final result = await fetchWeatherFromCity(CityParams(city: city));
+    result.fold((failure) {
       emit(state.copyWith(status: WeatherStatus.error, failure: failure));
       print('state: $state');
     }, (weather) {
