@@ -128,7 +128,7 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    TimeOfDay.fromDateTime(state.weather.lastUpdated)
+                    TimeOfDay.fromDateTime(state.weather.lastUpdated.toLocal())
                         .format(context),
                     style: const TextStyle(fontSize: 18),
                   ),
