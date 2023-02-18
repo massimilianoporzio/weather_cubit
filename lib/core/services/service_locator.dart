@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:get_it/get_it.dart';
+import 'package:openweather_cubit/features/theme/presentation/cubit/theme_cubit.dart';
+import 'package:openweather_cubit/features/weather/domain/entities/weather.dart';
 import '../../features/geolocation/data/datasources/local_datasource.dart';
 import '../../features/geolocation/data/datasources/local_datasource_impl.dart';
 import '../../features/geolocation/data/repositories/geolocation_repo_impl.dart';
@@ -27,6 +29,8 @@ Future<void> init() async {
       ));
 
   sl.registerFactory<TempSettingsCubit>(() => TempSettingsCubit());
+
+  sl.registerFactory<ThemeCubit>(() => ThemeCubit());
 
   //usecases
   sl.registerLazySingleton(
